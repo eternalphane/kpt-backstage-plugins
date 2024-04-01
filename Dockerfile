@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+ARG NODE_VERSION=20
+ARG NODE_IMAGE=node:${NODE_VERSION}-bookworm-slim
+
 # Stage 1 - Create yarn install skeleton layer
-FROM node:16-bullseye-slim AS packages
+FROM ${NODE_IMAGE} AS packages
 
 WORKDIR /app
 COPY package.json yarn.lock ./
@@ -25,7 +28,7 @@ RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -exec rm -rf {
 
 
 # Stage 2 - Install dependencies and build packages
-FROM node:16-bullseye-slim AS build
+FROM ${NODE_IMAGE} AS build
 
 WORKDIR /app
 COPY --from=packages /app .
@@ -44,7 +47,7 @@ RUN yarn --cwd packages/backend build
 
 
 # Stage 3 - Build the base image
-FROM node:16-bullseye-slim as base-backstage-app
+FROM ${NODE_IMAGE} as base-backstage-app
 
 WORKDIR /app
 

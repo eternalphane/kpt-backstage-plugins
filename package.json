@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "16 || 18"
+    "node": "18 || 20"
   },
   "scripts": {
     "dev": "NODE_ENV=development concurrently \"yarn start\" \"yarn start-backend\"",
@@ -35,6 +35,7 @@
     "@spotify/prettier-config": "^12.0.0",
     "concurrently": "^6.0.0",
     "lerna": "^4.0.0",
+    "node-gyp": "^10.1.0",
     "prettier": "^2.3.2",
     "typescript": "~4.5.4"
   },
