@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConfigAsDataApi } from '../apis';
+import { ConfigAsDataApi, FetchError } from '../apis';
 
 let configSyncEnabled = false;
 
@@ -35,9 +35,22 @@ export const loadFeatures = async (api: ConfigAsDataApi): Promise<void> => {
     );
 
     if (configManagementGroupExists) {
-      const { items: configManagements } = await api.listConfigManagements();
+      try {
+        const { items: configManagements } = await api.listConfigManagements();
 
-      configSyncEnabled = configManagements.length > 0;
+        configSyncEnabled = configManagements.length > 0;
+      } catch (err) {
+        if (err instanceof FetchError && err.responseStatus == 404) {
+          await Promise.all([
+            api.getCustomResourceDefinition('rootsyncs.configsync.gke.io'),
+            api.getCustomResourceDefinition('reposyncs.configsync.gke.io')
+          ]);
+          // OSS version if both RootSync & RepoSync are found while ConfigManagement is missing
+          configSyncEnabled = true;
+          return;
+        }
+        throw err;
+      }
     }
   }
 };

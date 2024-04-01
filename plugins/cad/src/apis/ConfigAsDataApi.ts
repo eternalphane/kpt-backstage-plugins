@@ -17,6 +17,7 @@
 import { createApiRef } from '@backstage/core-plugin-api';
 import { ListApiGroups } from '../types/ApiGroup';
 import { ListConfigManagements } from '../types/ConfigManagement';
+import { CustomResourceDefinition } from '../types/CustomResourceDefinition';
 import { GetFeaturesResponse } from '../types/Features';
 import { Function } from '../types/Function';
 import { PackageRevision } from '../types/PackageRevision';
@@ -34,6 +35,8 @@ export type ConfigAsDataApi = {
   listApiGroups(): Promise<ListApiGroups>;
 
   listConfigManagements(): Promise<ListConfigManagements>;
+
+  getCustomResourceDefinition(name: string): Promise<CustomResourceDefinition>;
 
   createSecret(secret: Secret): Promise<Secret>;
 

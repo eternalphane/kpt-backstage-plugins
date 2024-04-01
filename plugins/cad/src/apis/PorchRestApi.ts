@@ -23,6 +23,7 @@ import {
 import { ConfigAsDataApi } from '.';
 import { ListApiGroups } from '../types/ApiGroup';
 import { ListConfigManagements } from '../types/ConfigManagement';
+import { CustomResourceDefinition } from '../types/CustomResourceDefinition';
 import { GetFeaturesResponse } from '../types/Features';
 import { Function } from '../types/Function';
 import { KubernetesStatus } from '../types/KubernetesStatus';
@@ -50,6 +51,7 @@ type KptFunctionMinorVersinDetails = {
 };
 
 export class FetchError extends Error {
+  responseStatus?: number;
   responseText?: string;
 
   static async forResponse(
@@ -64,6 +66,7 @@ export class FetchError extends Error {
     const newFetchError = new FetchError(
       `${statusDescription}, ${requestDescription}`,
     );
+    newFetchError.responseStatus = response.status;
     newFetchError.responseText = responseText;
 
     return newFetchError;
@@ -190,6 +193,14 @@ export class PorchRestAPI implements ConfigAsDataApi {
     );
 
     return configManagements;
+  }
+
+  async getCustomResourceDefinition(name: string): Promise<CustomResourceDefinition> {
+    const crd = await this.cadFetch(
+      `/apis/apiextensions.k8s.io/v1/customresourcedefinitions/${name}`
+    );
+
+    return crd;
   }
 
   async createSecret(secret: Secret): Promise<Secret> {
